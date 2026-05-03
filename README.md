@@ -13,25 +13,28 @@ However, regardless of the demise of public Nitter instances, it is still possib
 * A **burner/temporary** Twitter account **without 2FA enabled** (sign up [here](https://twitter.com/i/flow/signup))
 * Some Linux and terminal knowledge
 
-## Decide where to host the Nitter instance
-* [fly.io, a Platform-as-a-Service hosting provider](https://fly.io/) -> [go to the "Host on fly.io" section](#host-on-flyio)
-* A server or NAS -> [go to the "Host on a server or NAS" section](#host-on-a-server-or-nas)
+## Steps to host on a server or NAS
+### 1. Create a `docker-compose.yml` file.
+Create a `docker-compose.yml` file by copying [this file](https://github.com/zedeus/nitter/blob/master/docker-compose.yml)
 
-## Host on fly.io
-With the fly.io setup, you will get a personal, password-protected Nitter instance on the Internet.
+Replace `zedeus/nitter:latest` with `zedeus/nitter:latest-arm64` if your server or NAS is ARM64
 
-Although fly.io is a paid platform, the setup uses as minimal as possible resources and your usage should fall into their free tier as long as you keep it just for personal usage.
+### 2. Create a `nitter.conf` file
+Create a `nitter.conf` file by copying [this file](https://github.com/zedeus/nitter/blob/master/nitter.example.conf)
 
-[Guide](./docs/fly-io.md)
+Change `redisHost = "localhost"` to `redisHost = "nitter-redis"`
 
-## Host on a server or NAS
-You need a server or NAS running Linux on x86_64 or arm64 with Docker installed (verify by running `docker run hello-world` and `docker compose -v` if you are unsure)
+Customize other options of this config file to your liking
 
-[Guide](./docs/server.md)
+### 3. Obtain credentials
+Follow Nitter's [guide on obtaining credentials](https://github.com/zedeus/nitter/wiki/Creating-session-tokens)
 
-## TODO
-- [x] An integrated docker entrypoint that handles all the credential retrieving, Nitter configuration, nginx configuration, etc., so that one can just start the Docker container/fly.io app with environment variables and start using the instance, instead of fiddling in a terminal
-- [ ] An bootstrapping and admin UI
-- [ ] Deploy to Zeabur
-- [ ] Deploy to Railway
-- [ ] Deploy to Vercel
+Place the resulting `sessions.jsonl` to the directory you were working in from the previous step
+
+### 4. Run Nitter
+```
+docker compose up -d
+```
+If everything goes well, you should now be able to
+* Access your Nitter instance from `http://localhost:8080`
+* Access a RSS feed for your Nitter instance such as `http://localhost:8080/elonmusk/rss`
